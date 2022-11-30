@@ -19,7 +19,7 @@
  *
  */
 
-import Vue from 'vue'
+import { nextTick } from 'vue'
 
 /**
  * Mixin to reparent the panel of the vue-at component to a specific element.
@@ -104,7 +104,7 @@ export default {
 			if (atwho) {
 				// Panel will be opened in next tick; defer moving it to the
 				// proper parent until that happens
-				Vue.nextTick(function() {
+				nextTick(function() {
 					this.atWhoPanelElement = this.at.$refs.wrap.querySelector('.atwho-panel')
 
 					if (this.atWhoPanelExtraClassesList.length > 0) {

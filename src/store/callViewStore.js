@@ -91,7 +91,7 @@ const mutations = {
 			throw new Error('Missing or empty sessionId argument in call to setParticipantHandRaised')
 		}
 		if (raisedHand && raisedHand.state) {
-			Vue.set(state.participantRaisedHands, sessionId, raisedHand)
+			set(state.participantRaisedHands, sessionId, raisedHand)
 		} else {
 			Vue.delete(state.participantRaisedHands, sessionId)
 		}
@@ -100,7 +100,7 @@ const mutations = {
 		state.participantRaisedHands = {}
 	},
 	setCachedBackgroundImageAverageColor(state, { videoBackgroundId, backgroundImageAverageColor }) {
-		Vue.set(state.backgroundImageAverageColorCache, videoBackgroundId, backgroundImageAverageColor)
+		set(state.backgroundImageAverageColorCache, videoBackgroundId, backgroundImageAverageColor)
 	},
 	clearBackgroundImageAverageColorCache(state) {
 		state.backgroundImageAverageColorCache = {}
