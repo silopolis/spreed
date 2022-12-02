@@ -646,6 +646,14 @@ Signaling.Standalone.prototype.connect = function() {
 		}, 2000)
 	}
 
+	if (!this.settings) {
+		console.warn('Signaling settings not found when trying to connect, they might be being updated.' )
+
+		this.reconnect()
+
+		return
+	}
+
 	console.debug('Connecting to ' + this.url + ' for ' + this.settings.token)
 	this.callbacks = {}
 	this.id = 1
