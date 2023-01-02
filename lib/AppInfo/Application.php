@@ -26,6 +26,7 @@ namespace OCA\Talk\AppInfo;
 
 use OCA\Talk\Collaboration\Reference\ReferenceInvalidationListener;
 use OCA\Talk\Collaboration\Reference\TalkReferenceProvider;
+use OCA\Talk\Webhooks\Listener as WebhookListener;
 use OCP\Collaboration\Resources\LoadAdditionalScriptsEvent;
 use OCP\Util;
 use OCA\Circles\Events\AddingCircleMemberEvent;
@@ -178,6 +179,7 @@ class Application extends App implements IBootstrap {
 		CollaboratorsListener::register($dispatcher);
 		ResourceListener::register($dispatcher);
 		ReferenceInvalidationListener::register($dispatcher);
+		WebhookListener::register($dispatcher);
 		// Register only when Talk Updates are not disabled
 		if ($server->getConfig()->getAppValue('spreed', 'changelog', 'yes') === 'yes') {
 			ChangelogListener::register($dispatcher);
