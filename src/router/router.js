@@ -33,17 +33,21 @@ import WelcomeView from '../views/WelcomeView.vue'
 
 Vue.use(Router)
 
-const webRootWithIndexPHP = getRootUrl() + '/index.php'
-const doesURLContainIndexPHP = window.location.pathname.startsWith(webRootWithIndexPHP)
-const base = generateUrl('/', {}, {
-	noRewrite: doesURLContainIndexPHP,
-})
-
-export default new Router({
-	mode: 'history',
+function generateTalkWebBasePath() {
 	// if index.php is in the url AND we got this far, then it's working:
 	// let's keep using index.php in the url
-	base,
+	const webRootWithIndexPHP = getRootUrl() + '/index.php'
+	const doesURLContainIndexPHP = window.location.pathname.startsWith(webRootWithIndexPHP)
+	return generateUrl('/', {}, {
+		noRewrite: doesURLContainIndexPHP,
+	})
+}
+
+export default new Router({
+	// On desktop (Electron) app is opened via file:// protocol, History API is not available. In Vue 3 use MemoryHistory
+	mode: !IS_TALK_DESKTOP ? 'history' : 'hash',
+	// Desktop is not a webview, no need to base
+	base: !IS_TALK_DESKTOP ? generateTalkWebBasePath() : '',
 	linkActiveClass: 'active',
 	routes: [
 		{
