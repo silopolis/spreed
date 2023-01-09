@@ -48,12 +48,16 @@ const sessionIssueHandler = {
 			SessionStorage.removeItem('joined_conversation')
 			// Need to delay until next tick, otherwise the PreventUnload is still being triggered
 			// Putting the window in front with the warning and irritating the user
-			this.$nextTick(() => {
-				// FIXME: can't use router push as it somehow doesn't clean up
-				// fully and leads the other instance where "Join here" was clicked
-				// to redirect to "not found"
-				window.location = url
-			})
+			if (!IS_TALK_DESKTOP) {
+				this.$nextTick(() => {
+					// FIXME: can't use router push as it somehow doesn't clean up
+					// fully and leads the other instance where "Join here" was clicked
+					// to redirect to "not found"
+					window.location = url
+				})
+			} else {
+				// TODO: catch error another way
+			}
 		},
 
 		duplicateSessionTriggered() {
