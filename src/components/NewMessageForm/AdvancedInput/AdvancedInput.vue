@@ -209,18 +209,18 @@ export default {
 		},
 	},
 
-	computed: {
-		disableKeyboardShortcuts() {
-			return OCP.Accessibility.disableKeyboardShortcuts()
-		},
-	},
-
 	data() {
 		return {
 			text: '',
 			autoCompleteMentionCandidates: [],
 			blurTimer: null,
 		}
+	},
+
+	computed: {
+		disableKeyboardShortcuts() {
+			return OCP.Accessibility.disableKeyboardShortcuts()
+		},
 	},
 	watch: {
 		text(text) {
@@ -450,13 +450,13 @@ div[contenteditable] {
 	line-height: $chat-line-height;
 	min-height: $clickable-area;
 	border-radius: calc($clickable-area / 2);
-	border: 1px solid var(--color-border-dark);
+	border: 2px solid var(--color-border-dark);
 	max-height: 180px;
 	overflow-y: auto;
 	&:hover,
 	&:focus,
 	&:active {
-		border: 1px solid var(--color-primary-element) !important;
+		border: 2px solid var(--color-primary-element) !important;
 	}
 }
 
