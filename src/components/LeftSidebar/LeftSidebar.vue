@@ -542,6 +542,9 @@ export default {
 
 .conversations-search {
 	flex-grow: 1;
+	::v-deep .input-field__input {
+		border-radius: var(--border-radius-pill);
+	}
 }
 
 .settings-button {
