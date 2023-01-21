@@ -112,3 +112,5 @@ title: Capabilities
 * `recording-v1` - Call recording is available.
 * `config => call => breakout-rooms` - Whether breakout rooms are enabled on this instance
 * `config => call => recording` - Whether calls can be recorded (requires the High-performance backend server)
+* `config => conversations => can-create-group` - Whether the user can create group conversations, if not only one-to-one conversations are allowed
+* `config => conversations => can-create-public` - Whether the user can create public conversations, if not only one-to-one conversations are allowed

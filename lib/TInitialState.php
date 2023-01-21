@@ -106,6 +106,16 @@ trait TInitialState {
 		);
 
 		$this->initialState->provideInitialState(
+			'start_group_conversations',
+			!$this->talkConfig->isNotAllowedToCreateGroupConversations($user)
+		);
+
+		$this->initialState->provideInitialState(
+			'start_public_conversations',
+			!$this->talkConfig->isNotAllowedToCreatePublicConversations($user)
+		);
+
+		$this->initialState->provideInitialState(
 			'circles_enabled',
 			$appManager->isEnabledForUser('circles', $user)
 		);
@@ -170,6 +180,16 @@ trait TInitialState {
 
 		$this->initialState->provideInitialState(
 			'start_conversations',
+			false
+		);
+
+		$this->initialState->provideInitialState(
+			'start_group_conversations',
+			false
+		);
+
+		$this->initialState->provideInitialState(
+			'start_public_conversations',
 			false
 		);
 
