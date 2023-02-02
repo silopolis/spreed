@@ -351,6 +351,8 @@ export default {
 
 					try {
 						await this.$store.dispatch('deleteConversationFromServer', { token: this.item.token })
+						await this.$store.dispatch('leaveConversation', { token: this.item.token })
+						await this.$router.push({ name: 'root' })
 					} catch (error) {
 						console.debug(`error while deleting conversation ${error}`)
 						showError(t('spreed', 'Error while deleting conversation'))
@@ -365,6 +367,8 @@ export default {
 		async leaveConversation() {
 			try {
 				await this.$store.dispatch('removeCurrentUserFromConversation', { token: this.item.token })
+				await this.$store.dispatch('leaveConversation', { token: this.item.token })
+				await this.$router.push({ name: 'root' })
 			} catch (error) {
 				if (error?.response?.status === 400) {
 					showError(t('spreed', 'You need to promote a new moderator before you can leave the conversation.'))

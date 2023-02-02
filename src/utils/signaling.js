@@ -319,7 +319,7 @@ Signaling.Base.prototype.updateCallFlags = function(token, flags) {
 	})
 }
 
-Signaling.Base.prototype.leaveCall = function(token, keepToken, all = false) {
+Signaling.Base.prototype.leaveCallleaveCall = function(token, keepToken, all = false) {
 	return new Promise((resolve, reject) => {
 		if (!token) {
 			reject(new Error())
@@ -447,6 +447,7 @@ Signaling.Internal.prototype._joinRoomSuccess = function(token, sessionId) {
 
 Signaling.Internal.prototype._doLeaveRoom = function(token) {
 	this._joinCallAgainOnceDisconnected = false
+	this.pullMessagesRequest?.('canceled')
 }
 
 Signaling.Internal.prototype.sendCallMessage = function(data) {
