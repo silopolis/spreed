@@ -125,8 +125,6 @@
 
 import Plus from 'vue-material-design-icons/Plus.vue'
 
-import { generateUrl } from '@nextcloud/router'
-
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch.js'
 import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
@@ -148,6 +146,7 @@ import {
 } from '../../../services/conversationsService.js'
 import { EventBus } from '../../../services/EventBus.js'
 import { addParticipant } from '../../../services/participantsService.js'
+import { generateFullConversationLink } from '../../../services/urlService.js'
 
 export default {
 
@@ -200,9 +199,7 @@ export default {
 		},
 		// Generates the link to the current conversation
 		linkToConversation() {
-			if (this.token !== '') {
-				return window.location.protocol + '//' + window.location.host + generateUrl('/call/' + this.token)
-			} else return ''
+			return this.token && generateFullConversationLink(this.token)
 		},
 		// Controls the disabled/enabled state of the first page's button.
 		disabled() {

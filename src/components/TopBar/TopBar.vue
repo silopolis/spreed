@@ -135,7 +135,6 @@ import MessageText from 'vue-material-design-icons/MessageText.vue'
 
 import { showMessage } from '@nextcloud/dialogs'
 import { emit } from '@nextcloud/event-bus'
-import { generateUrl } from '@nextcloud/router'
 
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 import NcCounterBubble from '@nextcloud/vue/dist/Components/NcCounterBubble.js'
@@ -240,14 +239,6 @@ export default {
 		},
 		hasUnreadMentions() {
 			return this.conversation.unreadMention
-		},
-
-		linkToConversation() {
-			if (this.token !== '') {
-				return window.location.protocol + '//' + window.location.host + generateUrl('/call/' + this.token)
-			} else {
-				return ''
-			}
 		},
 
 		renderedDescription() {

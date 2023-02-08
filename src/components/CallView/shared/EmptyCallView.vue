@@ -29,16 +29,13 @@
 		</p>
 		<NcButton v-if="showLink"
 			type="primary"
-			@click.stop.prevent="copyLinkToConversation">
+			@click.stop.prevent="handleCopyLink">
 			{{ t('spreed', 'Copy link') }}
 		</NcButton>
 	</div>
 </template>
 
 <script>
-import { showError, showSuccess } from '@nextcloud/dialogs'
-import { generateUrl } from '@nextcloud/router'
-
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 
 import { CONVERSATION, PARTICIPANT } from '../../../constants.js'
@@ -50,6 +47,8 @@ export default {
 	components: {
 		NcButton,
 	},
+
+	inject: ['copyLinkToConversation'],
 
 	props: {
 		isGrid: {
@@ -161,24 +160,13 @@ export default {
 		showLink() {
 			return this.isPublicConversation && !this.isPasswordRequestConversation && !this.isFileConversation
 		},
-
-		linkToConversation() {
-			return window.location.protocol + '//' + window.location.host + generateUrl('/call/' + this.token)
-		},
-
 	},
 
 	methods: {
-		async copyLinkToConversation() {
-			try {
-				await navigator.clipboard.writeText(this.linkToConversation)
-				showSuccess(t('spreed', 'Conversation link copied to clipboard'))
-			} catch (error) {
-				showError(t('spreed', 'The link could not be copied'))
-			}
+		async handleCopyLink() {
+			await this.copyLinkToConversation(this.token)
 		},
 	},
-
 }
 </script>
 
@@ -201,12 +189,13 @@ export default {
 		width: 64px;
 		margin: 0 auto 15px;
 	}
+
 	button {
 		margin: 4px auto;
 	}
 
 	h2, p {
-		color: #ffffff;
+		color: #FFFFFF;
 	}
 
 	&--sidebar {

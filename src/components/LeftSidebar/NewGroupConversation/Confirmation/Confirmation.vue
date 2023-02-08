@@ -98,6 +98,7 @@ export default {
 	},
 
 	methods: {
+		// TODO: DESKTOP
 		async onClickCopyLink() {
 			try {
 				await navigator.clipboard.writeText(this.linkToConversation)

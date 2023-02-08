@@ -42,6 +42,7 @@ import debounce from 'debounce'
 import PreventUnload from 'vue-prevent-unload'
 
 import { getCurrentUser } from '@nextcloud/auth'
+import { showError, showSuccess } from '@nextcloud/dialogs'
 import { emit, subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { generateUrl } from '@nextcloud/router'
 
@@ -68,6 +69,7 @@ import { EventBus } from './services/EventBus.js'
 import {
 	leaveConversationSync,
 } from './services/participantsService.js'
+import { generateFullConversationLink } from './services/urlService.js'
 import {
 	signalingKill,
 } from './utils/webrtc/index.js'
@@ -97,6 +99,12 @@ export default {
 		participant,
 		isMobile,
 	],
+
+	provide() {
+		return {
+			copyLinkToConversation: this.copyLinkToConversation,
+		}
+	},
 
 	data() {
 		return {
@@ -628,6 +636,23 @@ export default {
 				open: true,
 			})
 			document.querySelector('.conversations-search')[0].focus()
+		},
+
+		/**
+		 * Copy conversation link to a clipboard and show message via dialogs
+		 * Provided to all components
+		 *
+		 * @param {string} token - conversation token
+		 * @param {string} [messageId] - messageId for message in conversation link
+		 * @return {Promise<void>}
+		 */
+		async copyLinkToConversation(token, messageId) {
+			try {
+				await navigator.clipboard.writeText(generateFullConversationLink(token, messageId))
+				showSuccess(t('spreed', 'Conversation link copied to clipboard'))
+			} catch (error) {
+				showError(t('spreed', 'The link could not be copied'))
+			}
 		},
 	},
 }

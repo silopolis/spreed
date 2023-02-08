@@ -149,12 +149,7 @@ import Plus from 'vue-material-design-icons/Plus.vue'
 import Reply from 'vue-material-design-icons/Reply.vue'
 import Share from 'vue-material-design-icons/Share.vue'
 
-import {
-	showError,
-	showSuccess,
-} from '@nextcloud/dialogs'
 import moment from '@nextcloud/moment'
-import { generateUrl } from '@nextcloud/router'
 
 import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
 import NcActionLink from '@nextcloud/vue/dist/Components/NcActionLink.js'
@@ -191,6 +186,9 @@ export default {
 		Reply,
 		NcEmojiPicker,
 	},
+
+	inject: ['copyLinkToConversation'],
+
 	props: {
 		token: {
 			type: String,
@@ -435,14 +433,7 @@ export default {
 		},
 
 		async handleCopyMessageLink() {
-			try {
-				const link = window.location.protocol + '//' + window.location.host + generateUrl('/call/' + this.token) + '#message_' + this.id
-				await navigator.clipboard.writeText(link)
-				showSuccess(t('spreed', 'Message link copied to clipboard'))
-			} catch (error) {
-				console.error('Error copying link: ', error)
-				showError(t('spreed', 'The link could not be copied'))
-			}
+			await this.copyLinkToConversation(this.token, this.id)
 		},
 
 		async handleMarkAsUnread() {
