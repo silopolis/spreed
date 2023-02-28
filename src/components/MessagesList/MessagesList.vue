@@ -40,7 +40,6 @@ get the messagesList array and loop through the list to generate the messages.
 			:key="item[0].id"
 			:style="{ height: item.height + 'px' }"
 			v-bind="item"
-			:last-read-message-id="visualLastReadMessageId"
 			:messages="item"
 			:next-message-id="(messagesGroupedByAuthor[index + 1] && messagesGroupedByAuthor[index + 1][0].id) || 0"
 			:previous-message-id="(index > 0 && messagesGroupedByAuthor[index - 1][messagesGroupedByAuthor[index - 1].length - 1].id) || 0" />
@@ -177,8 +176,8 @@ export default {
 			return this.$store.getters.windowIsVisible() && this.isVisible
 		},
 
-		visualLastReadMessageId() {
-			return this.$store.getters.getVisualLastReadMessageId(this.token)
+		lastReadMessageId() {
+			return this.$store.getters.conversation(this.token).lastReadMessage
 		},
 
 		/**
@@ -478,9 +477,9 @@ export default {
 				focussed = this.focusMessage(focusMessageId, false)
 			}
 
-			if (!focussed && this.visualLastReadMessageId) {
+			if (!focussed && this.lastReadMessageId) {
 				// scroll to last read message if visible in the current pages
-				focussed = this.focusMessage(this.visualLastReadMessageId, false, false)
+				focussed = this.focusMessage(this.lastReadMessageId, false, false)
 			}
 
 			// TODO: in case the element is not in a page but does exist in the DB,
@@ -495,7 +494,7 @@ export default {
 
 			// if no scrollbars, clear read marker directly as scrolling is not possible for the user to clear it
 			// also clear in case lastReadMessage is zero which is due to an older bug
-			if (this.visualLastReadMessageId === 0 || this.scroller.scrollHeight <= this.scroller.offsetHeight) {
+			if (this.lastReadMessageId === 0 || this.scroller.scrollHeight <= this.scroller.offsetHeight) {
 				// clear after a delay, unless scrolling can resume in-between
 				this.debounceUpdateReadMarkerPosition()
 			}
@@ -837,7 +836,7 @@ export default {
 		 * @return {object} DOM element of the last read message
 		 */
 		getVisualLastReadMessageElement() {
-			let el = document.getElementById('message_' + this.visualLastReadMessageId)
+			let el = document.getElementById('message_' + this.lastReadMessageId)
 			if (el) {
 				el = el.closest('.message')
 			}

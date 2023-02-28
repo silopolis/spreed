@@ -383,11 +383,6 @@ export default {
 			default: 0,
 		},
 
-		lastReadMessageId: {
-			type: [String, Number],
-			default: 0,
-		},
-
 		reactions: {
 			type: [Array, Object],
 			default: () => { return {} },
@@ -419,6 +414,10 @@ export default {
 	},
 
 	computed: {
+		lastReadMessageId() {
+			return this.$store.getters.conversation(this.token).lastReadMessage
+		},
+
 		isLastReadMessage() {
 			if (!this.nextMessageId) {
 				// never display indicator on the very last message
