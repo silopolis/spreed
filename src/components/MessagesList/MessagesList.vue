@@ -265,10 +265,6 @@ export default {
 		scrollToBottomAriaLabel() {
 			return t('spreed', 'Scroll to bottom')
 		},
-
-		scroller() {
-			return this.$refs.scroller
-		},
 	},
 
 	watch: {
@@ -494,7 +490,7 @@ export default {
 
 			// if no scrollbars, clear read marker directly as scrolling is not possible for the user to clear it
 			// also clear in case lastReadMessage is zero which is due to an older bug
-			if (this.lastReadMessageId === 0 || this.scroller.scrollHeight <= this.scroller.offsetHeight) {
+			if (this.lastReadMessageId === 0 || this.$refs.scroller.scrollHeight <= this.$refs.scroller.offsetHeight) {
 				// clear after a delay, unless scrolling can resume in-between
 				this.debounceUpdateReadMarkerPosition()
 			}
@@ -739,16 +735,14 @@ export default {
 				}
 			}
 
-			const scrollHeight = this.scroller.scrollHeight
-			const scrollTop = this.scroller.scrollTop
+			const { scrollHeight, scrollTop, clientHeight } = this.$refs.scroller
 			const scrollOffset = scrollHeight - scrollTop
-			const elementHeight = this.scroller.clientHeight
 			const tolerance = 10
-			if (scrollOffset < elementHeight + tolerance && scrollOffset > elementHeight - tolerance) {
+			if (scrollOffset < clientHeight + tolerance && scrollOffset > clientHeight - tolerance) {
 				this.setChatScrolledToBottom(true)
 				this.displayMessagesLoader = false
 				this.previousScrollTopValue = scrollTop
-			} else if (scrollHeight > elementHeight && scrollTop < 800 && scrollTop <= this.previousScrollTopValue) {
+			} else if (scrollHeight > clientHeight && scrollTop < 800 && scrollTop <= this.previousScrollTopValue) {
 				if (this.loadingOldMessages) {
 					// already loading, don't do it twice
 					return
@@ -777,7 +771,7 @@ export default {
 		 * @param {object} messageEl message element after which to start searching
 		 * @return {object} DOM element for the last visible message
 		 */
-		findFirstVisibleMessage(messageEl) {
+		findLastVisibleMessage(messageEl) {
 			let el = messageEl
 
 			// When the current message is not visible (reaction or expired)
@@ -788,12 +782,11 @@ export default {
 			}
 			let previousEl = el
 
-			const scrollTop = this.scroller.scrollTop
+			const scrollerBottom = this.$refs.scroller.scrollTop + this.$refs.scroller.offsetHeight
 			while (el) {
-				// is the message element fully visible with no intersection with the bottom border ?
-				if (el.offsetTop - scrollTop >= 0) {
-					// this means that the previous message we had was fully visible,
-					// so we return that
+				// is the current message element is not fully visible and below the scroller bottom border
+				// return the previous message, which is fully visible
+				if (el.offsetTop + el.offsetHeight >= scrollerBottom) {
 					return previousEl
 				}
 
@@ -830,7 +823,7 @@ export default {
 		 *
 		 * @return {object} DOM element of the last read message
 		 */
-		getVisualLastReadMessageElement() {
+		getLastReadMessageElement() {
 			let el = document.getElementById('message_' + this.lastReadMessageId)
 			if (el) {
 				el = el.closest('.message')
@@ -840,7 +833,7 @@ export default {
 		},
 
 		/**
-		 * Recalculates the current read marker position based on the first visible element,
+		 * Recalculates the current read marker position based on the last visible element,
 		 * but only do so if the previous marker was already seen.
 		 *
 		 * The new marker position will be sent to the backend but not applied visually.
@@ -878,18 +871,25 @@ export default {
 				return
 			}
 
-			if (lastReadMessageElement && (lastReadMessageElement.offsetTop - this.scroller.scrollTop > 0)) {
+			if (!lastReadMessageElement) {
+				return
+			}
+
+			const lastReadMessageElementBottom = lastReadMessageElement.offsetTop + lastReadMessageElement.offsetHeight
+			const scrollerVisibleTop = this.$refs.scroller.scrollTop + this.$refs.scroller.offsetTop
+
+			if (lastReadMessageElementBottom - scrollerVisibleTop > 0) {
 				// still visible, hasn't disappeared at the top yet
 				return
 			}
 
-			const firstVisibleMessage = this.findFirstVisibleMessage(lastReadMessageElement)
-			if (!firstVisibleMessage) {
-				console.warn('First visible message not found: ', firstVisibleMessage)
+			const lastVisibleMessage = this.findLastVisibleMessage(lastReadMessageElement)
+			if (!lastVisibleMessage) {
+				console.warn('Last visible message not found: ', lastVisibleMessage)
 				return
 			}
 
-			const messageId = parseInt(firstVisibleMessage.getAttribute('data-message-id'), 10)
+			const messageId = parseInt(lastVisibleMessage.getAttribute('data-message-id'), 10)
 			if (messageId <= this.conversation.lastReadMessage) {
 				// it was probably a scroll up, don't update
 				return
@@ -918,19 +918,19 @@ export default {
 			this.$nextTick(function() {
 				if (this.isWindowVisible && (document.hasFocus() || this.isInCall)) {
 					// scrollTo is used when the user is watching
-					this.scroller.scrollTo({
-						top: this.scroller.scrollHeight,
+					this.$refs.scroller.scrollTo({
+						top: this.$refs.scroller.scrollHeight,
 						behavior: 'smooth',
 					})
 					this.setChatScrolledToBottom(true)
 				} else {
 					// Otherwise we jump half a message and stop autoscrolling, so the user can read up
-					if (this.scroller.scrollHeight - this.scroller.scrollTop - this.scroller.offsetHeight < 40) {
+					if (this.$refs.scroller.scrollHeight - this.$refs.scroller.scrollTop - this.$refs.scroller.offsetHeight < 40) {
 						// Single new line from the previous author is 35px so scroll half a line
-						this.scroller.scrollTop += 10
+						this.$refs.scroller.scrollTop += 10
 					} else {
 						// Single new line from the new author is 75px so scroll half an avatar
-						this.scroller.scrollTop += 40
+						this.$refs.scroller.scrollTop += 40
 					}
 					this.setChatScrolledToBottom(false)
 				}
@@ -941,7 +941,7 @@ export default {
 		 */
 		scrollToBottom() {
 			this.$nextTick(function() {
-				this.scroller.scrollTop = this.scroller.scrollHeight
+				this.$refs.scroller.scrollTop = this.$refs.scroller.scrollHeight
 				this.setChatScrolledToBottom(true)
 			})
 
@@ -975,7 +975,7 @@ export default {
 				})
 				if (!smooth) {
 					// scroll the viewport slightly further to make sure the element is about 1/3 from the top
-					this.scroller.scrollTop += this.scroller.offsetHeight / 4
+					this.$refs.scroller.scrollTop += this.$refs.scroller.offsetHeight / 4
 				}
 				if (highlightAnimation) {
 					element.focus()
