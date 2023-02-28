@@ -508,11 +508,6 @@ export default {
 				this.isInitialisingMessages = true
 				const focusMessageId = this.getMessageIdFromHash()
 
-				this.$store.dispatch('setVisualLastReadMessageId', {
-					token: this.token,
-					id: this.conversation.lastReadMessage,
-				})
-
 				if (this.$store.getters.getFirstKnownMessageId(this.token) === null) {
 					// first time load, initialize important properties
 					if (this.loadChatInLegacyMode || focusMessageId === null) {
@@ -552,9 +547,9 @@ export default {
 
 						if (!startingMessageFound) {
 							const fallbackStartingMessage = this.$store.getters.getFirstDisplayableMessageIdBeforeReadMarker(this.token, startingMessage)
-							this.$store.dispatch('setVisualLastReadMessageId', {
+							this.$store.dispatch('updateConversationLastReadMessage', {
 								token: this.token,
-								id: fallbackStartingMessage,
+								lastReadMessage: fallbackStartingMessage,
 							})
 							this.focusMessage(fallbackStartingMessage, false, false)
 						}
@@ -819,10 +814,10 @@ export default {
 			if (!this.conversation) {
 				return
 			}
-			console.debug('setVisualLastReadMessageId token=' + this.token + ' id=' + this.conversation.lastReadMessage)
-			this.$store.dispatch('setVisualLastReadMessageId', {
+			console.debug('updateConversationLastReadMessage token=' + this.token + ' id=' + this.conversation.lastReadMessage)
+			this.$store.dispatch('updateConversationLastReadMessage', {
 				token: this.token,
-				id: this.conversation.lastReadMessage,
+				lastReadMessage: this.conversation.lastReadMessage,
 			})
 		},
 
@@ -860,7 +855,7 @@ export default {
 			// to fix issues, this scenario should not happen
 			if (this.conversation.lastReadMessage === 0) {
 				console.debug('clearLastReadMessage because lastReadMessage was 0 token=' + this.token)
-				this.$store.dispatch('clearLastReadMessage', { token: this.token, updateVisually: true })
+				this.$store.dispatch('clearLastReadMessage', { token: this.token })
 				return
 			}
 
@@ -869,7 +864,7 @@ export default {
 				return
 			}
 
-			const lastReadMessageElement = this.getVisualLastReadMessageElement()
+			const lastReadMessageElement = this.getLastReadMessageElement()
 
 			// first unread message has not been seen yet, so don't move it
 			if (lastReadMessageElement && lastReadMessageElement.getAttribute('data-seen') !== 'true') {
@@ -900,10 +895,9 @@ export default {
 				return
 			}
 
-			// we don't update visually here, it will update the next time the
-			// user focuses back on the conversation. See refreshReadMarkerPosition().
 			console.debug('updateLastReadMessage token=' + this.token + ' messageId=' + messageId)
-			this.$store.dispatch('updateLastReadMessage', { token: this.token, id: messageId, updateVisually: false })
+			this.$store.dispatch('updateLastReadMessage', { token: this.token, id: messageId })
+			this.refreshReadMarkerPosition()
 		},
 
 		/**

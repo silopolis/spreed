@@ -582,8 +582,11 @@ const actions = {
 		commit('addConversation', conversation)
 	},
 
-	async updateConversationLastReadMessage({ commit }, { token, lastReadMessage }) {
+	async updateConversationLastReadMessage({ commit, getters }, { token, lastReadMessage }) {
 		commit('updateConversationLastReadMessage', { token, lastReadMessage })
+
+		const unreadMessages = getters.conversation(token).lastMessage.id - lastReadMessage
+		commit('updateUnreadMessages', { token, unreadMessages })
 	},
 
 	async overwriteHasCallByChat({ commit }, { token, hasCall }) {

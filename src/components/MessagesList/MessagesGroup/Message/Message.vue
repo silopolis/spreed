@@ -181,7 +181,6 @@ the main body of the message as well as a quote.
 			:is-forwarder-open.sync="isForwarderOpen"
 			:message-api-data="messageApiData"
 			:message-object="messageObject"
-			:is-last-read="isLastReadMessage"
 			:can-react="canReact"
 			v-bind="$props"
 			:previous-message-id="previousMessageId"
@@ -419,15 +418,12 @@ export default {
 		},
 
 		isLastReadMessage() {
-			if (!this.nextMessageId) {
+			if (!this.nextMessageId || this.id === this.conversation?.lastMessage?.id) {
 				// never display indicator on the very last message
 				return false
 			}
-			// note: not reading lastReadMessage from the conversation as we want to define it externally
-			// to have closer control on marker's visibility behavior
+
 			return this.id === this.lastReadMessageId
-				&& (!this.conversation.lastMessage
-				|| this.id !== this.conversation.lastMessage.id)
 		},
 
 		messageObject() {

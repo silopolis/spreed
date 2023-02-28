@@ -5,10 +5,7 @@ import Vuex from 'vuex'
 
 import { showError } from '@nextcloud/dialogs'
 
-import messagesStore from './messagesStore.js'
-import {
-	ATTENDEE,
-} from '../constants.js'
+import { ATTENDEE } from '../constants.js'
 import {
 	deleteMessage,
 	updateLastReadMessage,
@@ -17,6 +14,7 @@ import {
 	postNewMessage,
 } from '../services/messagesService.js'
 import CancelableRequest from '../utils/cancelableRequest.js'
+import messagesStore from './messagesStore.js'
 
 jest.mock('../services/messagesService', () => ({
 	deleteMessage: jest.fn(),
@@ -582,10 +580,7 @@ describe('messagesStore', () => {
 			getUserIdMock.mockReturnValue(() => 'user-1')
 
 			store.dispatch('setVisualLastReadMessageId', { token: TOKEN, id: 100 })
-			await store.dispatch('clearLastReadMessage', {
-				token: TOKEN,
-				updateVisually: false,
-			})
+			await store.dispatch('clearLastReadMessage', { token: TOKEN })
 
 			expect(conversationsMock).toHaveBeenCalled()
 			expect(markConversationReadAction).toHaveBeenCalledWith(expect.anything(), TOKEN)
@@ -603,10 +598,7 @@ describe('messagesStore', () => {
 			getUserIdMock.mockReturnValue(() => 'user-1')
 
 			store.dispatch('setVisualLastReadMessageId', { token: TOKEN, id: 100 })
-			await store.dispatch('clearLastReadMessage', {
-				token: TOKEN,
-				updateVisually: true,
-			})
+			await store.dispatch('clearLastReadMessage', { token: TOKEN })
 
 			expect(conversationsMock).toHaveBeenCalled()
 			expect(markConversationReadAction).toHaveBeenCalledWith(expect.anything(), TOKEN)
@@ -624,10 +616,7 @@ describe('messagesStore', () => {
 			getUserIdMock.mockReturnValue(() => null)
 
 			store.dispatch('setVisualLastReadMessageId', { token: TOKEN, id: 100 })
-			await store.dispatch('clearLastReadMessage', {
-				token: TOKEN,
-				updateVisually: true,
-			})
+			await store.dispatch('clearLastReadMessage', { token: TOKEN })
 
 			expect(conversationsMock).toHaveBeenCalled()
 			expect(markConversationReadAction).toHaveBeenCalledWith(expect.anything(), TOKEN)

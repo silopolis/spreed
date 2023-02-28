@@ -94,11 +94,6 @@ const state = {
 	lastKnown: {},
 
 	/**
-	 * Cached last read message id for display.
-	 */
-	visualLastReadMessageId: {},
-
-	/**
 	 * Loaded messages history parts of a conversation
 	 *
 	 * The messages list can still be empty due to message expiration,
@@ -194,13 +189,6 @@ const getters = {
 	getLastKnownMessageId: (state) => (token) => {
 		if (state.lastKnown[token]) {
 			return state.lastKnown[token]
-		}
-		return null
-	},
-
-	getVisualLastReadMessageId: (state) => (token) => {
-		if (state.visualLastReadMessageId[token]) {
-			return state.visualLastReadMessageId[token]
 		}
 		return null
 	},
@@ -365,16 +353,6 @@ const mutations = {
 	},
 
 	/**
-	 * @param {object} state current store state;
-	 * @param {object} data the wrapping object;
-	 * @param {string} data.token Token of the conversation
-	 * @param {string} data.id Id of the last read chat message
-	 */
-	setVisualLastReadMessageId(state, { token, id }) {
-		Vue.set(state.visualLastReadMessageId, token, id)
-	},
-
-	/**
 	 * Deletes the messages entry from the store for the given conversation token.
 	 *
 	 * @param {object} state current store state
@@ -386,9 +364,6 @@ const mutations = {
 		}
 		if (state.lastKnown[token]) {
 			Vue.delete(state.lastKnown, token)
-		}
-		if (state.visualLastReadMessageId[token]) {
-			Vue.delete(state.visualLastReadMessageId, token)
 		}
 		if (state.messages[token]) {
 			Vue.delete(state.messages, token)
@@ -683,16 +658,6 @@ const actions = {
 	},
 
 	/**
-	 * @param {object} context default store context;
-	 * @param {object} data the wrapping object;
-	 * @param {string} data.token Token of the conversation
-	 * @param {string} data.id Id of the last read chat message
-	 */
-	setVisualLastReadMessageId(context, { token, id }) {
-		context.commit('setVisualLastReadMessageId', { token, id })
-	},
-
-	/**
 	 * Deletes all messages of a conversation from the store only.
 	 *
 	 * @param {object} context default store context;
@@ -709,15 +674,14 @@ const actions = {
 	 * @param {object} context default store context;
 	 * @param {object} data the wrapping object;
 	 * @param {object} data.token the token of the conversation to be updated;
-	 * @param {boolean} data.updateVisually whether to also clear the marker visually in the UI;
 	 */
-	async clearLastReadMessage(context, { token, updateVisually = false }) {
+	async clearLastReadMessage(context, { token }) {
 		const conversation = context.getters.conversations[token]
 		if (!conversation || !conversation.lastMessage) {
 			return
 		}
 		// set the id to the last message
-		context.dispatch('updateLastReadMessage', { token, id: conversation.lastMessage.id, updateVisually })
+		context.dispatch('updateLastReadMessage', { token, id: conversation.lastMessage.id })
 		context.dispatch('markConversationRead', token)
 	},
 
@@ -729,9 +693,8 @@ const actions = {
 	 * @param {object} data the wrapping object;
 	 * @param {object} data.token the token of the conversation to be updated;
 	 * @param {number} data.id the id of the message on which to set the read marker;
-	 * @param {boolean} data.updateVisually whether to also update the marker visually in the UI;
 	 */
-	async updateLastReadMessage(context, { token, id = 0, updateVisually = false }) {
+	async updateLastReadMessage(context, { token, id = 0 }) {
 		const conversation = context.getters.conversations[token]
 		if (!conversation || conversation.lastReadMessage === id) {
 			return
@@ -743,9 +706,6 @@ const actions = {
 
 		// optimistic early commit to avoid indicator flickering
 		context.dispatch('updateConversationLastReadMessage', { token, lastReadMessage: id })
-		if (updateVisually) {
-			context.commit('setVisualLastReadMessageId', { token, id })
-		}
 
 		if (context.getters.getUserId()) {
 			// only update on server side if there's an actual user, not guest
@@ -1147,7 +1107,6 @@ const actions = {
 				context.dispatch('updateLastReadMessage', {
 					token: conversation.token,
 					id: message.id,
-					updateVisually: true,
 				})
 			}
 
