@@ -319,7 +319,7 @@ Signaling.Base.prototype.updateCallFlags = function(token, flags) {
 	})
 }
 
-Signaling.Base.prototype.leaveCallleaveCall = function(token, keepToken, all = false) {
+Signaling.Base.prototype.leaveCall = function(token, keepToken, all = false) {
 	return new Promise((resolve, reject) => {
 		if (!token) {
 			reject(new Error())
