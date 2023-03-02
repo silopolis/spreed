@@ -572,7 +572,7 @@ export default {
 				}
 				// When a conversation is opened directly, the "Talk - " part is
 				// missing from the title
-				if (this.defaultPageTitle.indexOf(t('spreed', 'Talk') + ' - ') !== 0) {
+				if (!TALK_DESKTOP && this.defaultPageTitle.indexOf(t('spreed', 'Talk') + ' - ') !== 0) {
 					this.defaultPageTitle = t('spreed', 'Talk') + ' - ' + this.defaultPageTitle
 				}
 			}
