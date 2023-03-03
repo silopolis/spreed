@@ -64,6 +64,8 @@
 				<NcButton type="tertiary" @click="handleDismiss">
 					{{ t('spreed', 'Dismiss') }}
 				</NcButton>
+				<!-- FIXME replace with NcRichContenteditable -->
+				<input v-model="mediaCaption">
 				<NcButton ref="submitButton" type="primary" @click="handleUpload">
 					{{ t('spreed', 'Send') }}
 				</NcButton>
@@ -91,6 +93,12 @@ export default {
 		Plus,
 		AudioPlayer,
 		NcButton,
+	},
+
+	data() {
+		return {
+			mediaCaption: '',
+		}
 	},
 
 	computed: {
@@ -169,7 +177,7 @@ export default {
 		},
 
 		handleUpload() {
-			this.$store.dispatch('uploadFiles', this.currentUploadId)
+			this.$store.dispatch('uploadFiles', { uploadId: this.currentUploadId, mediaCaption: this.mediaCaption })
 		},
 		/**
 		 * Clicks the hidden file input when clicking the correspondent NcActionButton,
