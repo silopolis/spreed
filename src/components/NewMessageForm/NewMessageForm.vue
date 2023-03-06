@@ -112,7 +112,7 @@
 							:parent-id="messageToBeReplied.id"
 							v-bind="messageToBeReplied" />
 					</div>
-					<NcRichContenteditable ref="richContenteditable"
+					<NcRichContentEditable ref="richContenteditable"
 						v-shortkey.once="$options.disableKeyboardShortcuts ? null : ['c']"
 						class="new-message-form__richContenteditable"
 						:value.sync="text"
@@ -235,7 +235,7 @@ import NcActions from '@nextcloud/vue/dist/Components/NcActions.js'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 import NcEmojiPicker from '@nextcloud/vue/dist/Components/NcEmojiPicker.js'
 import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
-import NcRichContenteditable from '@nextcloud/vue/dist/Components/NcRichContenteditable.js'
+import NcRichContentEditable from '@nextcloud/vue/dist/Components/NcRichContenteditable.js'
 import NcTextField from '@nextcloud/vue/dist/Components/NcTextField.js'
 
 import Quote from '../Quote.vue'
@@ -274,7 +274,7 @@ export default {
 		NcButton,
 		Paperclip,
 		NcEmojiPicker,
-		NcRichContenteditable,
+		NcRichContentEditable,
 		EmoticonOutline,
 		Send,
 		AudioRecorder,
@@ -533,6 +533,10 @@ export default {
 			}
 
 			if (this.text !== '') {
+				// FIXME: remove after issue is resolved: https://github.com/nextcloud/nextcloud-vue/issues/3264
+				const temp = document.createElement('textarea')
+				temp.innerHTML = this.text
+				this.text = temp.value
 				const temporaryMessage = await this.$store.dispatch('createTemporaryMessage', { text: this.text, token: this.token })
 				// FIXME: move "addTemporaryMessage" into "postNewMessage" as it's a pre-requisite anyway ?
 				if (!this.broadcast) {
@@ -933,7 +937,7 @@ export default {
 			position: relative;
 		}
 
-		// Override NcRichContenteditable styles
+		// Override NcRichContentEditable styles
 		& &__richContenteditable {
 			border: 1px solid var(--color-border-dark);
 			border-radius: calc(var(--default-clickable-area) / 2);

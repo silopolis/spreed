@@ -213,7 +213,11 @@ export default {
 				return
 			}
 			// Remove leading/trailing whitespaces.
-			this.descriptionText = this.descriptionText.replace(/\r\n|\n|\r/gm, '\n').trim()
+			// FIXME: remove after issue is resolved: https://github.com/nextcloud/nextcloud-vue/issues/3264
+			const temp = document.createElement('textarea')
+			temp.innerHTML = this.descriptionText
+			this.descriptionText = temp.value.replace(/\r\n|\n|\r/gm, '\n').trim()
+
 			// Submit description
 			this.$emit('submit-description', this.descriptionText)
 			/**
